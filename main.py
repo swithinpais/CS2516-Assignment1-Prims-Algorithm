@@ -43,6 +43,8 @@ def create_graph(n: int, m: int) -> Graph:
         edges.add((v1.label, v2.label))
         g.add_edge(e)
 
+    return g
+
 
 def main() -> None:
     pass
