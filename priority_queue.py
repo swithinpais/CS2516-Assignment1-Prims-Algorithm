@@ -154,7 +154,8 @@ class HeapAPQ(APQ):
 class UnsortedListAPQ(APQ):
     def add(self, key: int, value: T) -> Element:
         e = Element(key, value, self.length())
-        return self._queue.append(e)
+        self._queue.append(e)
+        return e
 
     def remove_min(self) -> T:
         e = self._queue[0]
@@ -163,8 +164,8 @@ class UnsortedListAPQ(APQ):
                 e = v
         n = self.length() - 1
         self._queue[e.index], self._queue[n] = self._queue[n], self._queue[e.index]
-        t = self._queue.pop()
         self._queue[e.index].index = e.index
+        t = self._queue.pop()
         return t.value
 
     def update_key(self, element: Element, key: int) -> None:
