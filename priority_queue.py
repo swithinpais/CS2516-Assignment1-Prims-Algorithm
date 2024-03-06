@@ -25,14 +25,6 @@ class APQ(ABC):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({', '.join(self._queue)})"
 
-    def min(self) -> T:
-        """Returns the highest priority item.
-
-        Returns:
-            T: The item with the highest priority.
-        """
-        return self._queue[0].value
-
     def length(self) -> int:
         """Returns the length of the queue.
 
@@ -43,6 +35,14 @@ class APQ(ABC):
 
     def get_key(self, element: Element) -> int:
         return element.key
+
+    @abstractmethod
+    def min(self) -> T:
+        """Returns the highest priority item.
+
+        Returns:
+            T: The item with the highest priority.
+        """
 
     @abstractmethod
     def add(self, key: int, value: T) -> Element:
@@ -115,6 +115,9 @@ class HeapAPQ(APQ):
             self._queue[(i - 1) // 2] = (i - 1) // 2
             i = (i - 1) // 2
 
+    def min(self) -> T:
+        return self._queue[0].value
+
     def add(self, key: int, value: T) -> Element:
         e = Element(key, value)
         self._queue.append(e)
@@ -157,14 +160,19 @@ class UnsortedListAPQ(APQ):
         self._queue.append(e)
         return e
 
+    def min(self) -> T:
+        e = self._queue[0]
+        for v in self._queue:
+            if v < e:
+                e = v
+        return e
+
     def remove_min(self) -> T:
         e = self._queue[0]
         for v in self._queue:
             if v < e:
                 e = v
-        n = self.length() - 1
-        self._queue[e.index], self._queue[n] = self._queue[n], self._queue[e.index]
-        self._queue[e.index].index = e.index
+        self._swap_with_end(e)
         t = self._queue.pop()
         return t.value
 
@@ -172,7 +180,11 @@ class UnsortedListAPQ(APQ):
         element.key = key
 
     def remove(self, element: Element) -> tuple[int, T]:
+        self._swap_with_end(element)
+        self._queue.pop()
+
+    # TODO Rename this here and in `remove_min` and `remove`
+    def _swap_with_end(self, element: Element):
         n = self.length() - 1
         self._queue[element.index], self._queue[n] = self._queue[n], self._queue[element.index]
-        self._queue.pop()
         self._queue[element.index].index = element.index
