@@ -8,10 +8,11 @@ from abc import ABC, abstractmethod
 T = TypeVar("T")
 
 
-@dataclass(frozen=True, order=True, slots=True)
+@dataclass(order=True, slots=True)
 class Element:
     key: int
     value: T = field(compare=False)
+    index: int = field(compare=False)
 
 
 class APQ(ABC):
@@ -24,7 +25,6 @@ class APQ(ABC):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({', '.join(self._queue)})"
 
-    @abstractmethod
     def min(self) -> T:
         """Returns the highest priority item.
 
@@ -33,7 +33,6 @@ class APQ(ABC):
         """
         return self._queue[0].value
 
-    @abstractmethod
     def length(self) -> int:
         """Returns the length of the queue.
 
@@ -42,8 +41,11 @@ class APQ(ABC):
         """
         return len(self._queue)
 
+    def get_key(self, element: Element) -> int:
+        return element.key
+
     @abstractmethod
-    def add(self, key: int, value: T) -> None:
+    def add(self, key: int, value: T) -> Element:
         """Adds an item to the queue.
 
         Args:
@@ -59,15 +61,17 @@ class APQ(ABC):
             T: The item with highest priority.
         """
 
+    @abstractmethod
+    def update_key(self, element: Element, key: int) -> None:
+        pass
+
+    @abstractmethod
+    def remove(self, element: Element) -> tuple[int, T]:
+        pass
+
 
 class HeapAPQ(APQ):
-    def min(self) -> T:
-        return super().min()
-
-    def length(self) -> int:
-        return super().length()
-
-    def add(self, key: int, value: T) -> None:
+    def add(self, key: int, value: T) -> Element:
         e = Element(key, value)
         self._queue.append(e)
         i = self.length() - 1
@@ -75,6 +79,7 @@ class HeapAPQ(APQ):
             self._queue[i], self._queue[(i - 1) // 2] = \
                 self._queue[(i - 1) // 2], self._queue[i]
             i = (i - 1) // 2
+        return e
 
     def remove_min(self) -> T:
         n = self.length() - 1
