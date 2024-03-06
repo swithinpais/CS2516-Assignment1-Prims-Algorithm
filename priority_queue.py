@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import TypeVar
+from abc import ABC, abstractmethod
 
 
 T = TypeVar("T")
@@ -13,7 +14,7 @@ class Element:
     value: T = field(compare=False)
 
 
-class APriorityQueue:
+class APQ(ABC):
     def __init__(self) -> None:
         self._queue: list[Element] = []
 
@@ -21,8 +22,9 @@ class APriorityQueue:
         return repr(self)
 
     def __repr__(self) -> str:
-        return f""
+        return f"{self.__class__.__name__}({', '.join(self._queue)})"
 
+    @abstractmethod
     def min(self) -> T:
         """Returns the highest priority item.
 
@@ -31,6 +33,7 @@ class APriorityQueue:
         """
         return self._queue[0].value
 
+    @abstractmethod
     def length(self) -> int:
         """Returns the length of the queue.
 
@@ -39,6 +42,7 @@ class APriorityQueue:
         """
         return len(self._queue)
 
+    @abstractmethod
     def add(self, key: int, value: T) -> None:
         """Adds an item to the queue.
 
@@ -46,6 +50,24 @@ class APriorityQueue:
             key (int): The priority of the item. Smaller numbers are higher priority.
             value (T): The value of the item to be added.
         """
+
+    @abstractmethod
+    def remove_min(self) -> T:
+        """Returns and removes the item with highest priority.
+
+        Returns:
+            T: The item with highest priority.
+        """
+
+
+class HeapAPQ(APQ):
+    def min(self) -> T:
+        return super().min()
+
+    def length(self) -> int:
+        return super().length()
+
+    def add(self, key: int, value: T) -> None:
         e = Element(key, value)
         self._queue.append(e)
         i = self.length() - 1
@@ -55,11 +77,6 @@ class APriorityQueue:
             i = (i - 1) // 2
 
     def remove_min(self) -> T:
-        """Returns and removes the item with highest priority.
-
-        Returns:
-            T: The item with highest priority.
-        """
         n = self.length() - 1
         self._queue[0], self._queue[n] = self._queue[n], self._queue[0]
 
