@@ -71,23 +71,8 @@ class APQ(ABC):
 
 
 class HeapAPQ(APQ):
-    def add(self, key: int, value: T) -> Element:
-        e = Element(key, value)
-        self._queue.append(e)
-        i = self.length() - 1
-        while (self._queue[(i - 1) // 2] > e):
-            self._queue[i], self._queue[(i - 1) // 2] = \
-                self._queue[(i - 1) // 2], self._queue[i]
-            i = (i - 1) // 2
-        return e
-
-    def remove_min(self) -> T:
+    def _bubble_down(self, i: int) -> None:
         n = self.length() - 1
-        self._queue[0], self._queue[n] = self._queue[n], self._queue[0]
-
-        e = self._queue.pop(self.length() - 1)
-
-        i = 0
         while True:
             l, r = 2 * i + 1, 2 * i + 2
             if l > n:
@@ -96,14 +81,59 @@ class HeapAPQ(APQ):
                 if self._queue[i] < self._queue[r]:
                     break
                 self._queue[i], self._queue[r] = self._queue[r], self._queue[i]
+                self._queue[i].index, self._queue[r].index = i, r
                 i = r
             elif self._queue[l] < self._queue[r]:
                 if self._queue[i] < self._queue[l]:
                     break
                 else:
                     self._queue[i], self._queue[l] = self._queue[l], self._queue[i]
+                self._queue[i].index, self._queue[r].index = i, l
             elif self._queue[i] < self._queue[r]:
                 break
             else:
                 self._queue[i], self._queue[r] = self._queue[r], self._queue[i]
+                self._queue[i].index, self._queue[r].index = i, r
+
+    def _bubble_up(self, i: int) -> None:
+        while (self._queue[(i - 1) // 2] > self._queue[i]):
+            self._queue[i], self._queue[(i - 1) // 2] = \
+                self._queue[(i - 1) // 2], self._queue[i]
+            self._queue[i].index = i
+            self._queue[(i - 1) // 2] = (i - 1) // 2
+            i = (i - 1) // 2
+
+    def add(self, key: int, value: T) -> Element:
+        e = Element(key, value)
+        self._queue.append(e)
+
+        self._bubble_up(self.length() - 1)
+
+        return e
+
+    def remove_min(self) -> T:
+        n = self.length() - 1
+        self._queue[0], self._queue[n] = self._queue[n], self._queue[0]
+
+        e = self._queue.pop(self.length() - 1)
+
+        self._bubble_down(0)
+
         return e.value
+
+    def update_key(self, element: Element, key: int) -> None:
+        old_key = element.key
+        element.key = key
+        if old_key > key:
+            self._bubble_up(element.index)
+        else:
+            self._bubble_down(element.index)
+
+    def remove(self, element: Element) -> tuple[int, T]:
+        n = self.length() - 1
+        self._queue[element.index], self._queue[n] = self._queue[n], self._queue[element.index]
+
+        self._bubble_down(element.index)
+        self._bubble_up(element.index)
+
+        return element.key, element.value
