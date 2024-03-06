@@ -88,6 +88,9 @@ class Graph:
             raise DoesNotExistError
         return e
 
+    def get_edges(self, x: Vertex) -> list[Edge]:
+        return list(self._vertices[x].values())
+
     def remove_edge(self, e: Edge) -> None:
         if e not in self._edges:
             raise DoesNotExistError
