@@ -1,7 +1,13 @@
-class Element:
-    def __init__(self, value, key) -> None:
-        self.value = value
-        self.key = key
+from __future__ import annotations
 
-    def __str__(self) -> str:
-        pass
+from dataclasses import dataclass, field
+from typing import TypeVar
+
+
+T = TypeVar("T")
+
+
+@dataclass(frozen=True, order=True, slots=True)
+class Element:
+    value: T = field(compare=False)
+    key: int
