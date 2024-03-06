@@ -63,11 +63,23 @@ class APQ(ABC):
 
     @abstractmethod
     def update_key(self, element: Element, key: int) -> None:
-        pass
+        """Update the element's priority.
+
+        Args:
+            element (Element): The element to be updated.
+            key (int): The new priority of the element.
+        """
 
     @abstractmethod
     def remove(self, element: Element) -> tuple[int, T]:
-        pass
+        """Remove the element
+
+        Args:
+            element (Element): The element to be removed.
+
+        Returns:
+            tuple[int, T]: A (key, value) pair of the element's key and value.
+        """
 
 
 class HeapAPQ(APQ):
