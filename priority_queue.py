@@ -137,3 +137,29 @@ class HeapAPQ(APQ):
         self._bubble_up(element.index)
 
         return element.key, element.value
+
+
+class UnsortedListAPQ(APQ):
+    def add(self, key: int, value: T) -> Element:
+        e = Element(key, value, self.length())
+        return self._queue.append(e)
+
+    def remove_min(self) -> T:
+        e = self._queue[0]
+        for v in self._queue:
+            if v < e:
+                e = v
+        n = self.length() - 1
+        self._queue[e.index], self._queue[n] = self._queue[n], self._queue[e.index]
+        t = self._queue.pop()
+        self._queue[e.index].index = e.index
+        return t.value
+
+    def update_key(self, element: Element, key: int) -> None:
+        element.key = key
+
+    def remove(self, element: Element) -> tuple[int, T]:
+        n = self.length() - 1
+        self._queue[element.index], self._queue[n] = self._queue[n], self._queue[element.index]
+        self._queue.pop()
+        self._queue[element.index].index = element.index
