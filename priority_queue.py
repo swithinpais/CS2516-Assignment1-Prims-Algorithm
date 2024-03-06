@@ -24,12 +24,28 @@ class APriorityQueue:
         return f""
 
     def min(self) -> T:
+        """Returns the highest priority item.
+
+        Returns:
+            T: The item with the highest priority.
+        """
         return self._queue[0].value
 
     def length(self) -> int:
+        """Returns the length of the queue.
+
+        Returns:
+            int: The length of the queue.
+        """
         return len(self._queue)
 
     def add(self, key: int, value: T) -> None:
+        """Adds an item to the queue.
+
+        Args:
+            key (int): The priority of the item. Smaller numbers are higher priority.
+            value (T): The value of the item to be added.
+        """
         e = Element(key, value)
         self._queue.append(e)
         i = self.length() - 1
@@ -39,10 +55,15 @@ class APriorityQueue:
             i = (i - 1) // 2
 
     def remove_min(self) -> T:
+        """Returns and removes the item with highest priority.
+
+        Returns:
+            T: The item with highest priority.
+        """
         n = self.length() - 1
         self._queue[0], self._queue[n] = self._queue[n], self._queue[0]
 
-        e = self.pop(self.length() - 1)
+        e = self._queue.pop(self.length() - 1)
 
         i = 0
         while True:
@@ -63,3 +84,4 @@ class APriorityQueue:
                 break
             else:
                 self._queue[i], self._queue[r] = self._queue[r], self._queue[i]
+        return e.value
