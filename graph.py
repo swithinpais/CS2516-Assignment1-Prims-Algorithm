@@ -45,6 +45,9 @@ class Edge:
             raise TypeError
         return (self.vertex_1, self.vertex_2, self.label) == (__value.vertex_1, __value.vertex_2, __value.label)
 
+    def opposite(self, vertex: Vertex) -> Vertex:
+        return self.vertex_2 if vertex == self.vertex_1 else self.vertex_1
+
 
 class Graph:
     def __init__(self,):
