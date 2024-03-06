@@ -1,7 +1,7 @@
-from graph import Graph, Edge, Vertex
-
-import random
 from __future__ import annotations  # for compatibility with older Python versions
+import random
+
+from graph import Graph, Edge, Vertex
 
 
 def create_graph(n: int, m: int) -> Graph:
