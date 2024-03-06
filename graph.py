@@ -48,51 +48,56 @@ class Edge:
 
 class Graph:
     def __init__(self,):
-        self.vertices: dict[Vertex, dict[Vertex, Edge]] = {}
-        self.edges: dict[Edge, tuple[Vertex, Vertex]] = {}
+        self._vertices: dict[Vertex, dict[Vertex, Edge]] = {}
+        self._edges: dict[Edge, tuple[Vertex, Vertex]] = {}
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}(vertices=[{', '.join(str(v) for v in self.vertices.keys())}], edges=[{', '.join(str(e) for e in self.edges.keys())}])"
+        return f"{self.__class__.__name__}(vertices=[{', '.join(str(v) for v in self._vertices.keys())}], edges=[{', '.join(str(e) for e in self._edges.keys())}])"
 
     def __repr__(self) -> str:
         return str(self)
 
+    @property
+    def vertices(self) -> list[Vertex]:
+        return list(self._vertices.keys())
+
+    @property
+    def edges(self) -> list[Edge]:
+        return list(self.edges.keys())
+
     def num_vertices(self) -> int:
-        return len(self.vertices)
+        return len(self._vertices)
 
     def num_edges(self) -> int:
-        return len(self.edges)
+        return len(self._edges)
 
     def add_vertex(self, x: Vertex) -> None:
-        self.vertices[x] = {}
+        self._vertices[x] = {}
 
     def add_edge(self, x: Vertex, y: Vertex, e: Edge) -> None:
-        self.vertices[x][y] = e
-        self.vertices[y][x] = e
-        self.edges[e] = (x, y)
+        self._vertices[x][y] = e
+        self._vertices[y][x] = e
+        self._edges[e] = (x, y)
 
     def degree(self, x: Vertex) -> int:
-        return len(self.vertices[x].keys())
+        return len(self._vertices[x].keys())
 
     def get_edge(self, x: Vertex, y: Vertex) -> Edge:
-        e = self.vertices[x].get(y, None) if e in self.edges else None
+        e = self._vertices[x].get(y, None) if e in self._edges else None
         if e is None:
             raise DoesNotExistError
         return e
 
-    def get_edges(self, x: Vertex) -> list[Edge]:
-        return list(self.vertices[x].values())
-
     def remove_edge(self, e: Edge) -> None:
-        if e not in self.edges:
+        if e not in self._edges:
             raise DoesNotExistError
-        del self.edges[e]
-        del self.vertices[e.vertex_1][e.vertex_2]
-        del self.vertices[e.vertex_2][e.vertex_1]
+        del self._edges[e]
+        del self._vertices[e.vertex_1][e.vertex_2]
+        del self._vertices[e.vertex_2][e.vertex_1]
 
     def remove_vertex(self, x: Vertex) -> None:
-        if x not in self.vertices:
+        if x not in self._vertices:
             raise DoesNotExistError
-        for edge in self.vertices[x].values():
-            del self.edges[edge]
-        del self.vertices[x]
+        for edge in self._vertices[x].values():
+            del self._edges[edge]
+        del self._vertices[x]
