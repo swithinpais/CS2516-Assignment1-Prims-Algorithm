@@ -87,9 +87,9 @@ class HeapAPQ(APQ):
         n = self.length() - 1
         while True:
             l, r = 2 * i + 1, 2 * i + 2
-            if l > n:
+            if l >= n:
                 break
-            if r > n:
+            if r >= n:
                 if self._queue[i] < self._queue[r]:
                     break
                 self._queue[i], self._queue[r] = self._queue[r], self._queue[i]
@@ -98,31 +98,36 @@ class HeapAPQ(APQ):
             elif self._queue[l] < self._queue[r]:
                 if self._queue[i] < self._queue[l]:
                     break
-                else:
-                    self._queue[i], self._queue[l] = self._queue[l], self._queue[i]
-                self._queue[i].index, self._queue[r].index = i, l
+
+                self._queue[i], self._queue[l] = self._queue[l], self._queue[i]
+                self._queue[i].index, self._queue[l].index = i, l
+                i = l
             elif self._queue[i] < self._queue[r]:
                 break
             else:
                 self._queue[i], self._queue[r] = self._queue[r], self._queue[i]
                 self._queue[i].index, self._queue[r].index = i, r
+                i = r
 
     def _bubble_up(self, i: int) -> None:
-        while (self._queue[(i - 1) // 2] > self._queue[i]):
+        while (self._queue[(i - 1) // 2] > self._queue[i]) and i != 0:
             self._queue[i], self._queue[(i - 1) // 2] = \
                 self._queue[(i - 1) // 2], self._queue[i]
             self._queue[i].index = i
-            self._queue[(i - 1) // 2] = (i - 1) // 2
+            self._queue[(i - 1) // 2].index = (i - 1) // 2
             i = (i - 1) // 2
+        return i
 
     def min(self) -> T:
         return self._queue[0].value
 
     def add(self, key: int, value: T) -> Element:
-        e = Element(key, value)
+        e = Element(key, value, 0)
         self._queue.append(e)
 
-        self._bubble_up(self.length() - 1)
+        i = self._bubble_up(self.length() - 1)
+
+        e.index = i
 
         return e
 
@@ -130,6 +135,7 @@ class HeapAPQ(APQ):
         n = self.length() - 1
         self._queue[0], self._queue[n] = self._queue[n], self._queue[0]
 
+        self._queue[0].index = 0
         e = self._queue.pop(self.length() - 1)
 
         self._bubble_down(0)
