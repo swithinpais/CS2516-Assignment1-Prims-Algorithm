@@ -188,6 +188,7 @@ def main() -> None:
     logging.basicConfig(level=level)
 
     ratios = [0.01, 0.05, 0.1, 0.25, 0.35, 0.5, 0.65, 0.75, 0.9, 0.95, 0.99, 1]
+
     ns = [10, 20, 50, 100, 200, 500, 1000]
 
     times_heap, times_unsorted_list = get_data(
