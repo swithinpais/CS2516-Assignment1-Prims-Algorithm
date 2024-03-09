@@ -1,13 +1,21 @@
 from __future__ import annotations  # for compatibility with older Python versions
 
+import itertools
 import random
 import math
+import timeit
 
 from graph import Graph, Edge, Vertex
 from priority_queue import APQ, HeapAPQ, UnsortedListAPQ, Element
+from dict_zip import dict_zip
+
+import matplotlib.pyplot as plt
 
 
 def create_graph(n: int, m: int) -> Graph:
+    if m > ((n * (n - 1)) // 2):
+        raise ValueError(
+            f"Cannot create {m} edges for a graph with {n} nodes.")
     g = Graph()
 
     vertices = [Vertex("0")]
@@ -38,7 +46,7 @@ def create_graph(n: int, m: int) -> Graph:
 
         while (v1.label, v2.label) in edges or (v2.label, v1.label) in edges:
             # Get two vertices that have not been connected already
-            v1, v2 = random.choices(vertices, k=2)
+            v1, v2 = random.sample(vertices, 2)
 
         w = random.randint(1, 20)
 
@@ -84,8 +92,56 @@ def prim_unsorted_list(g: Graph) -> list[Edge]:
     return prim(g, apq)
 
 
+def time_functions(ratios: list[float], ns: list[int], iterations: int = 100):
+
+    times_heap: dict[int, dict[float, float]] = {}
+    times_unsorted_list: dict[int, dict[float, float]] = {}
+
+    for n in ns:
+        times_heap[n] = {}
+        times_unsorted_list[n] = {}
+        for ratio in ratios:
+            max_edges = (n * (n - 1)) // 2
+
+            m = int(ratio * max_edges)
+
+            g = create_graph(n, m)
+
+            glb = {"prim_heap": prim_heap,
+                   "prim_unsorted_list": prim_unsorted_list, "g": g}
+
+            t1 = timeit.timeit("prim_heap(g)", globals=glb, number=iterations)
+            t2 = timeit.timeit("prim_unsorted_list(g)",
+                               globals=glb, number=iterations)
+
+            times_heap[n][ratio] = t1
+            times_unsorted_list[n][ratio] = t2
+
+    return times_heap, times_unsorted_list
+
+
 def main() -> None:
-    pass
+    ratios = [0.01, 0.05, 0.1, 0.25, 0.35, 0.5, 0.65, 0.75, 0.9, 0.95, 0.99, 1]
+    ns = [10]
+
+    times_heap, times_unsorted_list = time_functions(ratios, ns)
+
+    # dict_zip is not written by me.
+    # It is written by MCoding. Original source code can be found
+    # here https://github.com/mCodingLLC/VideosSampleCode/blob/master/videos/101_zip_dict/zip_dict.py
+    # I do not take any credit for writing dict_zip
+
+    for n, d1, d2 in dict_zip(times_heap, times_unsorted_list):
+        print(n)
+        ax = plt.axes()
+        ax.set_title(f"{n = }")
+        ax.plot(d1.keys(), d1.values(), "r", label="Heap APQ")
+        ax.plot(d2.keys(), d2.values(), "b", label="Unsorted List APQ")
+        ax.legend()
+
+        path = f"./figures/{n=}"
+
+        plt.savefig(path)
 
 
 if __name__ == "__main__":
