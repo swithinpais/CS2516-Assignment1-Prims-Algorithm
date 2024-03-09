@@ -1,4 +1,5 @@
 from __future__ import annotations  # for compatibility with older Python versions
+
 import random
 import math
 
@@ -73,13 +74,18 @@ def prim(g: Graph, apq: APQ) -> list[Edge]:
     return tree
 
 
-def main() -> None:
-    random.seed(0)
-    g = create_graph(20, 25)
+def prim_heap(g: Graph) -> list[Edge]:
     apq = HeapAPQ()
-    tree = prim(g, apq)
-    print(tree)
-    print(str(tree) == "[Edge(9, Vertex(2), Vertex(0), 9), Edge(14, Vertex(1), Vertex(0), 14), Edge(13, Vertex(18), Vertex(1), 13), Edge(16, Vertex(3), Vertex(2), 16), Edge(10, Vertex(4), Vertex(3), 10), Edge(4, Vertex(12), Vertex(4), 4), Edge(5, Vertex(4), Vertex(16), 5), Edge(5, Vertex(7), Vertex(4), 5), Edge(5, Vertex(8), Vertex(4), 5), Edge(7, Vertex(6), Vertex(4), 7), Edge(12, Vertex(5), Vertex(3), 12), Edge(18, Vertex(17), Vertex(5), 18), Edge(11, Vertex(17), Vertex(13), 11), Edge(3, Vertex(13), Vertex(11), 3), Edge(5, Vertex(11), Vertex(9), 5), Edge(11, Vertex(14), Vertex(13), 11), Edge(1, Vertex(14), Vertex(15), 1), Edge(15, Vertex(19), Vertex(15), 15), Edge(18, Vertex(10), Vertex(4), 18)]")
+    return prim(g, apq)
+
+
+def prim_unsorted_list(g: Graph) -> list[Edge]:
+    apq = UnsortedListAPQ()
+    return prim(g, apq)
+
+
+def main() -> None:
+    pass
 
 
 if __name__ == "__main__":
