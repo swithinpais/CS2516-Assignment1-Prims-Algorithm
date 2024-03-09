@@ -38,12 +38,12 @@ class Edge:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.vertex_1, self.vertex_2, self.label))
+        return hash((self.vertex_1, self.vertex_2, self.label, self.weight))
 
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, Edge):
             raise TypeError
-        return (self.vertex_1, self.vertex_2, self.label) == (__value.vertex_1, __value.vertex_2, __value.label)
+        return (self.vertex_1, self.vertex_2, self.label, self.weight) == (__value.vertex_1, __value.vertex_2, __value.label, self.weight)
 
     def opposite(self, vertex: Vertex) -> Vertex:
         return self.vertex_2 if vertex == self.vertex_1 else self.vertex_1
