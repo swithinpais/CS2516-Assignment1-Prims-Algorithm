@@ -3,12 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TypeVar, Generic
 from abc import ABC, abstractmethod
+import sys
 
 
 T = TypeVar("T")
 
+py310 = sys.version_info.minor >= 10 and sys.version_info.major > 3
 
-@dataclass(order=True, slots=True)
+
+@dataclass(order=True, **({"slots": True} if py310 else {}))
 class Element(Generic[T]):
     key: int
     value: T = field(compare=False)
