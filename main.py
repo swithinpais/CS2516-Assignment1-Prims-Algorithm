@@ -13,6 +13,8 @@ from dict_zip import dict_zip
 
 import matplotlib.pyplot as plt
 
+PATH = "./figures/"
+
 
 def create_graph(n: int, m: int) -> Graph:
     if m > ((n * (n - 1)) // 2):
@@ -123,25 +125,8 @@ def time_functions(ratios: list[float], ns: list[int], iterations: int = 100):
     return times_heap, times_unsorted_list
 
 
-def main() -> None:
-    if "--INFO" in sys.argv:
-        level = logging.INFO
-    elif "--DEBUG" in sys.argv:
-        level = logging.DEBUG
-    else:
-        level = logging.WARNING
-
-    iterations = 100
-    for arg in sys.argv:
-        if "--iterations=" in arg:
-            iterations = int(arg.split("--iterations")[-1])
-
-    logging.basicConfig(level=level)
-
-    ratios = [0.01, 0.05, 0.1, 0.25, 0.35, 0.5, 0.65, 0.75, 0.9, 0.95, 0.99, 1]
-    ns = [10, 20, 50, 100, 200, 500, 1000]
-
-    if "--skip-tests" not in sys.argv:
+def get_data(ratios, ns, iterations, skip_tests):
+    if not skip_tests:
         times_heap, times_unsorted_list = time_functions(
             ratios, ns, iterations=iterations)
 
@@ -156,22 +141,59 @@ def main() -> None:
             times_unsorted_list = {
                 int(k1): {float(k2): v for k2, v in d.items()} for k1, d in d2.items()}
 
+
+def parse_command_line_arguments():
+    if "--INFO" in sys.argv:
+        level = logging.INFO
+    elif "--DEBUG" in sys.argv:
+        level = logging.DEBUG
+    else:
+        level = logging.WARNING
+
+    iterations = 100
+    for arg in sys.argv:
+        if "--iterations=" in arg:
+            iterations = int(arg.split("--iterations")[-1])
+
+    skip_tests = "--skip-tests" in sys.argv
+
+    return level, iterations, skip_tests
+
+
+def plot_data(times_heap, times_unsorted_list):
     # dict_zip is not written by me.
     # It is written by MCoding. Original source code can be found
     # here https://github.com/mCodingLLC/VideosSampleCode/blob/master/videos/101_zip_dict/zip_dict.py
     # I do not take any credit for writing dict_zip
-
     for n, d1, d2 in dict_zip(times_heap, times_unsorted_list):
         logging.info(f"Plotting {n = }")
+
         ax = plt.subplot()
+
         ax.set_title(f"{n = }")
+
         ax.plot(d1.keys(), d1.values(), "r", label="Heap APQ")
         ax.plot(d2.keys(), d2.values(), "b", label="Unsorted List APQ")
+
         ax.legend()
 
-        path = f"./figures/{n=}"
-        plt.savefig(path)
+        plt.savefig(f"{PATH}{n:=}")
         plt.cla()
+
+
+def main() -> None:
+
+    level, iterations, skip_tests = parse_command_line_arguments()
+
+    logging.basicConfig(level=level)
+
+    ratios = [0.01, 0.05, 0.1, 0.25, 0.35, 0.5, 0.65, 0.75, 0.9, 0.95, 0.99, 1]
+    ns = [10, 20, 50, 100, 200, 500, 1000]
+
+    times_heap, times_unsorted_list = get_data(
+        ratios, ns, iterations, skip_tests=skip_tests)
+
+    plot_data(times_heap, times_unsorted_list)
 
 
 if __name__ == "__main__":
