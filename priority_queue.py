@@ -140,6 +140,8 @@ class HeapAPQ(APQ):
         return e
 
     def remove_min(self) -> T:
+        if self.length() < 1:
+            raise IndexError("Cannot remove item from empty APQ")
         n = self.length() - 1
         self._queue[0], self._queue[n] = self._queue[n], self._queue[0]
 
@@ -159,6 +161,8 @@ class HeapAPQ(APQ):
             self._bubble_down(element.index)
 
     def remove(self, element: Element) -> tuple[int, T]:
+        if self.length() < 1:
+            raise IndexError("Cannot remove item from empty APQ")
         n = self.length() - 1
         self._queue[element.index], self._queue[n] = self._queue[n], self._queue[element.index]
 
@@ -182,6 +186,8 @@ class UnsortedListAPQ(APQ):
         return e
 
     def remove_min(self) -> T:
+        if self.length() < 1:
+            raise IndexError("Cannot remove item from empty APQ")
         e = self._queue[0]
         for v in self._queue:
             if v < e:
@@ -194,6 +200,8 @@ class UnsortedListAPQ(APQ):
         element.key = key
 
     def remove(self, element: Element) -> tuple[int, T]:
+        if self.length() < 1:
+            raise IndexError("Cannot remove item from empty APQ")
         self._swap_with_end(element)
         self._queue.pop()
 
