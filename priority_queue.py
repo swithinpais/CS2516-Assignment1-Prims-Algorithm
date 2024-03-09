@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TypeVar
+from typing import TypeVar, Generic
 from abc import ABC, abstractmethod
 
 
@@ -9,7 +9,7 @@ T = TypeVar("T")
 
 
 @dataclass(order=True, slots=True)
-class Element:
+class Element(Generic[T]):
     key: int
     value: T = field(compare=False)
     index: int = field(compare=False)
@@ -17,7 +17,7 @@ class Element:
 
 class APQ(ABC):
     def __init__(self) -> None:
-        self._queue: list[Element] = []
+        self._queue: list[Element[T]] = []
 
     def __str__(self) -> str:
         return repr(self)
@@ -34,6 +34,14 @@ class APQ(ABC):
         return len(self._queue)
 
     def get_key(self, element: Element) -> int:
+        """Returns the key of the element.
+
+        Args:
+            element (Element): The Element whose key is to be returned.
+
+        Returns:
+            int: The key of the element.
+        """
         return element.key
 
     @abstractmethod
