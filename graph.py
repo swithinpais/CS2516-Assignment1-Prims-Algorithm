@@ -38,14 +38,14 @@ class Edge:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash(frozenset((self.vertex_1, self.vertex_2, self.label, self.weight)))
+        return hash(frozenset((self.vertex_1, self.vertex_2, self.label)))
 
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, Edge):
             raise TypeError
 
-        return (self.vertex_1, self.vertex_2, self.label, self.weight) == (__value.vertex_1, __value.vertex_2, __value.label, __value.weight) \
-            or (self.vertex_2, self.vertex_1, self.label, self.weight) == (__value.vertex_1, __value.vertex_2, __value.label, __value.weight)
+        return (self.vertex_1, self.vertex_2, self.label) == (__value.vertex_1, __value.vertex_2, __value.label) \
+            or (self.vertex_2, self.vertex_1, self.label) == (__value.vertex_1, __value.vertex_2, __value.label)
 
     def opposite(self, vertex: Vertex) -> Vertex:
         return self.vertex_2 if vertex == self.vertex_1 else self.vertex_1
@@ -88,7 +88,7 @@ class Graph:
         return len(self._vertices[x].keys())
 
     def get_edge(self, x: Vertex, y: Vertex) -> Edge:
-        e = self._vertices[x].get(y, None) if e in self._edges else None
+        e = self._vertices[x].get(y, None)
         if e is None:
             raise DoesNotExistError
         return e
