@@ -183,7 +183,7 @@ class UnsortedListAPQ(APQ):
         for v in self._queue:
             if v < e:
                 e = v
-        return e
+        return e.value
 
     def remove_min(self) -> T:
         if self.length() < 1:
@@ -203,7 +203,8 @@ class UnsortedListAPQ(APQ):
         if self.length() < 1:
             raise IndexError("Cannot remove item from empty APQ")
         self._swap_with_end(element)
-        self._queue.pop()
+        e = self._queue.pop()
+        return e.key, e.value
 
     # TODO Rename this here and in `remove_min` and `remove`
     def _swap_with_end(self, element: Element):
