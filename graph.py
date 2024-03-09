@@ -38,7 +38,7 @@ class Edge:
         return str(self)
 
     def __hash__(self) -> int:
-        return hash((self.vertex_1, self.vertex_2, self.label, self.weight))
+        return hash(frozenset((self.vertex_1, self.vertex_2, self.label, self.weight)))
 
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, Edge):
@@ -68,7 +68,7 @@ class Graph:
 
     @property
     def edges(self) -> list[Edge]:
-        return list(self.edges.keys())
+        return list(self._edges.keys())
 
     def num_vertices(self) -> int:
         return len(self._vertices)
