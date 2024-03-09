@@ -1,6 +1,10 @@
+import sys
+
 from priority_queue import HeapAPQ, UnsortedListAPQ, APQ, Element
 
 import pytest
+
+py310 = sys.version_info.minor >= 10 or sys.version_info.major > 3
 
 
 @pytest.mark.parametrize("apq_class", [HeapAPQ, UnsortedListAPQ])
@@ -64,5 +68,6 @@ def test_element():
 
     assert e2 < e3
 
-    with pytest.raises(AttributeError):
-        e3.new_attr = 5
+    if py310:
+        with pytest.raises(AttributeError):
+            e3.new_attr = 5
