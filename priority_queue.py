@@ -8,7 +8,7 @@ import sys
 
 T = TypeVar("T")
 
-py310 = sys.version_info.minor >= 10 and sys.version_info.major > 3
+py310 = sys.version_info.minor >= 10 or sys.version_info.major > 3
 
 
 @dataclass(order=True, **({"slots": True} if py310 else {}))
