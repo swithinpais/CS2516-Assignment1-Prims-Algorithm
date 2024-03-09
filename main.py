@@ -1,9 +1,11 @@
 from __future__ import annotations  # for compatibility with older Python versions
 
-import itertools
+import logging
 import random
 import math
 import timeit
+import sys
+import json
 
 from graph import Graph, Edge, Vertex
 from priority_queue import APQ, HeapAPQ, UnsortedListAPQ, Element
@@ -101,6 +103,7 @@ def time_functions(ratios: list[float], ns: list[int], iterations: int = 100):
         times_heap[n] = {}
         times_unsorted_list[n] = {}
         for ratio in ratios:
+            logging.info(f"Running {n = } for {ratio = }")
             max_edges = (n * (n - 1)) // 2
 
             m = int(ratio * max_edges)
@@ -121,10 +124,37 @@ def time_functions(ratios: list[float], ns: list[int], iterations: int = 100):
 
 
 def main() -> None:
-    ratios = [0.01, 0.05, 0.1, 0.25, 0.35, 0.5, 0.65, 0.75, 0.9, 0.95, 0.99, 1]
-    ns = [10]
+    if "--INFO" in sys.argv:
+        level = logging.INFO
+    elif "--DEBUG" in sys.argv:
+        level = logging.DEBUG
+    else:
+        level = logging.WARNING
 
-    times_heap, times_unsorted_list = time_functions(ratios, ns)
+    iterations = 100
+    for arg in sys.argv:
+        if "--iterations=" in arg:
+            iterations = int(arg.split("--iterations")[-1])
+
+    logging.basicConfig(level=level)
+
+    ratios = [0.01, 0.05, 0.1, 0.25, 0.35, 0.5, 0.65, 0.75, 0.9, 0.95, 0.99, 1]
+    ns = [10, 20, 50, 100, 200, 500, 1000]
+
+    if "--skip-tests" not in sys.argv:
+        times_heap, times_unsorted_list = time_functions(
+            ratios, ns, iterations=iterations)
+
+        with open("data.json", "w") as f:
+            json.dump([times_heap, times_unsorted_list], f)
+
+    else:
+        with open("data.json") as f:
+            d1, d2 = json.load(f)
+            times_heap = {int(k1): {float(k2): v for k2, v in d.items()}
+                          for k1, d in d1.items()}
+            times_unsorted_list = {
+                int(k1): {float(k2): v for k2, v in d.items()} for k1, d in d2.items()}
 
     # dict_zip is not written by me.
     # It is written by MCoding. Original source code can be found
@@ -132,16 +162,16 @@ def main() -> None:
     # I do not take any credit for writing dict_zip
 
     for n, d1, d2 in dict_zip(times_heap, times_unsorted_list):
-        print(n)
-        ax = plt.axes()
+        logging.info(f"Plotting {n = }")
+        ax = plt.subplot()
         ax.set_title(f"{n = }")
         ax.plot(d1.keys(), d1.values(), "r", label="Heap APQ")
         ax.plot(d2.keys(), d2.values(), "b", label="Unsorted List APQ")
         ax.legend()
 
         path = f"./figures/{n=}"
-
         plt.savefig(path)
+        plt.cla()
 
 
 if __name__ == "__main__":
