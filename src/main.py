@@ -13,7 +13,7 @@ from dict_zip import dict_zip
 
 import matplotlib.pyplot as plt
 
-PATH = "./figures/"
+PATH = "../figures/"
 
 
 def create_graph(n: int, m: int) -> Graph:
@@ -140,6 +140,7 @@ def get_data(ratios, ns, iterations, skip_tests):
                           for k1, d in d1.items()}
             times_unsorted_list = {
                 int(k1): {float(k2): v for k2, v in d.items()} for k1, d in d2.items()}
+    return times_heap, times_unsorted_list
 
 
 def parse_command_line_arguments():
@@ -165,6 +166,19 @@ def plot_data(times_heap, times_unsorted_list):
     # It is written by MCoding. Original source code can be found
     # here https://github.com/mCodingLLC/VideosSampleCode/blob/master/videos/101_zip_dict/zip_dict.py
     # I do not take any credit for writing dict_zip
+    ratio1, ratio2 = {}, {}
+    for n, d in times_heap.items():
+        for r, t in d.items():
+            if r not in ratio1:
+                ratio1[r] = {}
+            ratio1[r][n] = t
+
+    for n, d in times_unsorted_list.items():
+        for r, t in d.items():
+            if r not in ratio2:
+                ratio2[r] = {}
+            ratio2[r][n] = t
+
     for n, d1, d2 in dict_zip(times_heap, times_unsorted_list):
         logging.info(f"Plotting {n = }")
 
@@ -177,7 +191,22 @@ def plot_data(times_heap, times_unsorted_list):
 
         ax.legend()
 
-        plt.savefig(f"{PATH}{n:=}")
+        plt.savefig(f"{PATH}{n=}")
+        plt.cla()
+
+    for ratio, d1, d2 in dict_zip(ratio1, ratio2):
+        logging.info(f"Plotting {ratio = }")
+
+        ax = plt.subplot()
+
+        ax.set_title(f"{ratio = }")
+
+        ax.plot(d1.keys(), d1.values(), "r", label="Heap APQ")
+        ax.plot(d2.keys(), d2.values(), "b", label="Unsorted List APQ")
+
+        ax.legend()
+
+        plt.savefig(f"{PATH}{ratio=}.png")
         plt.cla()
 
 

@@ -1,4 +1,4 @@
-from graph import Vertex, Edge, Graph
+from src.graph import Vertex, Edge, Graph
 
 
 def test_vertex():

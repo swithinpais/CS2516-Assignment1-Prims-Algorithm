@@ -1,6 +1,6 @@
 import sys
 
-from priority_queue import HeapAPQ, UnsortedListAPQ, APQ, Element
+from src.priority_queue import HeapAPQ, UnsortedListAPQ, APQ, Element
 
 import pytest
 
